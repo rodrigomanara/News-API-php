@@ -2,14 +2,17 @@
 
 namespace NewsApi;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
+
 /**
- * Description of AbstractApi
+ * Base API class providing shared HTTP communication and data handling logic.
  *
  * @author Rodrigo
  */
-class AbstractApi implements InterfaceApi {
-
-    private $data;
+class AbstractApi implements InterfaceApi
+{
+    private mixed $data = null;
 
     const NEWSAPI = 'cec26d4a3d9d4aeaa7684ec614575317';
     const URL = 'https://newsapi.org/v2/';
@@ -17,86 +20,81 @@ class AbstractApi implements InterfaceApi {
     const EVERYTHING = 'everything';
     const SOURCES = 'sources';
 
-    protected function call($url) {
+    /**
+     * Perform a GET request using Guzzle and store the decoded response.
+     *
+     * @param string $url
+     * @throws GuzzleException
+     */
+    protected function call(string $url): void
+    {
+        $client = new Client([
+            'timeout'  => 30,
+            'headers'  => [
+                'Cache-Control' => 'no-cache',
+            ],
+        ]);
 
-        $curl = curl_init();
-
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "UTF-8",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET",
-            CURLOPT_HTTPHEADER => array(
-                "Cache-Control: no-cache",
-            ),
-        ));
-
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-
-        curl_close($curl);
-
-        $this->setData($response);
-
-        if ($err) {
-            throw new \Exception("cURL Error #:" . $err);
-        }
+        $response = $client->get($url);
+        $body = (string) $response->getBody();
+        $this->data = json_decode($body);
     }
 
-    public function getData() {
+    public function getData(): mixed
+    {
         return $this->data;
     }
 
-    protected function setData($data, $encode = true) {
-
-        if ($encode) {
+    /**
+     * Set internal data either from a raw JSON string or from an associative array.
+     *
+     * @param mixed $data
+     * @param bool  $decode Whether to JSON-decode the value (true) or merge it directly (false).
+     */
+    protected function setData(mixed $data, bool $decode = true): void
+    {
+        if ($decode) {
             $this->data = json_decode($data);
         } else {
-            
-            foreach($data as $key => $value){
+            foreach ($data as $key => $value) {
                 $this->data[$key] = $value;
             }
-            
         }
     }
 
     /**
-     * 
-     * @param type $query
-     * @return type
+     * Validate that the query array contains a non-empty 'apiKey'.
+     *
+     * @param array<string, mixed> $query
+     * @return bool
      */
-    protected function validateQuery($query) { 
+    protected function validateQuery(array $query): bool
+    {
+        $valid = array_key_exists('apiKey', $query) && !empty($query['apiKey']);
 
-        $validate = (key_exists('apiKey', $query) && isset($query['apiKey']) && !empty($query['apiKey'])) ? true : false;
-        if (!$validate) {
-            $obj = ['error' => ['apikey' => 'missing apikey']]; 
-            $this->setData($obj, false);
-        } 
-
-       
-        return $validate;
-    }
-    
-    
-    /**
-     * 
-     * @param type $query
-     * @return type
-     */
-    protected function validateType($query) { 
-
-        
-
-        $validate = (isset($query['type']) && ((self::TOP_HEADLINE == $query['type'] || self::SOURCES == $query['type'] || self::EVERYTHING == $query['type']))) ? true : false;
-        if (!$validate) { 
-            $obj = ['error' => ['type' => 'type is not correct']];
-            $this->setData($obj, false);
+        if (!$valid) {
+            $this->setData(['error' => ['apikey' => 'missing apikey']], false);
         }
 
-        return $validate;
+        return $valid;
     }
 
+    /**
+     * Validate that the query array contains a supported endpoint 'type'.
+     *
+     * @param array<string, mixed> $query
+     * @return bool
+     */
+    protected function validateType(array $query): bool
+    {
+        $allowedTypes = [self::TOP_HEADLINE, self::EVERYTHING, self::SOURCES];
+        $valid = isset($query['type']) && in_array($query['type'], $allowedTypes, true);
+
+        if (!$valid) {
+            $this->setData(['error' => ['type' => 'type is not correct']], false);
+        }
+
+        return $valid;
+    }
 }
+
