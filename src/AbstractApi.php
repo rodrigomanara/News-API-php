@@ -14,23 +14,31 @@ class AbstractApi implements InterfaceApi
 {
     private mixed $data = null;
 
-    const NEWSAPI = 'cec26d4a3d9d4aeaa7684ec614575317';
+    private ?Client $httpClient = null;
+
     const URL = 'https://newsapi.org/v2/';
     const TOP_HEADLINE = 'top-headlines';
     const EVERYTHING = 'everything';
     const SOURCES = 'sources';
 
     /**
+     * Override the Guzzle client (useful for testing with a MockHandler).
+     */
+    public function setClient(Client $client): void
+    {
+        $this->httpClient = $client;
+    }
+
+    /**
      * Perform a GET request using Guzzle and store the decoded response.
      *
-     * @param string $url
      * @throws GuzzleException
      */
     protected function call(string $url): void
     {
-        $client = new Client([
-            'timeout'  => 30,
-            'headers'  => [
+        $client = $this->httpClient ?? new Client([
+            'timeout' => 30,
+            'headers' => [
                 'Cache-Control' => 'no-cache',
             ],
         ]);
