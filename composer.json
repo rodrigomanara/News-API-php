@@ -1,20 +1,60 @@
 {
     "name": "rmanara/news-api-php",
-    "description": "Api call for newFeed",
+    "description": "PHP SDK for the NewsAPI service",
+    "version": "1.0.0",
     "type": "library",
+    "license": "MIT",
+    "homepage": "https://github.com/rodrigomanara/News-API-php",
+    "keywords": [
+        "news",
+        "newsapi",
+        "sdk",
+        "api",
+        "php"
+    ],
     "authors": [
         {
             "name": "Rodrigo Manara",
             "email": "me@rodrigomanara.co.uk"
         }
     ],
+    "support": {
+        "issues": "https://github.com/rodrigomanara/News-API-php/issues",
+        "source": "https://github.com/rodrigomanara/News-API-php"
+    },
     "minimum-stability": "stable",
+    "prefer-stable": true,
+    "require": {
+        "php": ">=7.4",
+        "ext-curl": "*",
+        "ext-json": "*"
+    },
     "autoload": {
         "psr-4": {
             "NewsApi\\": "src/"
         }
     },
+    "autoload-dev": {
+        "classmap": [
+            "test/"
+        ]
+    },
     "require-dev": {
-        "phpunit/phpunit": "^7.0"
+        "phpunit/phpunit": "^8.5.52"
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test:coverage": "vendor/bin/phpunit --coverage-text"
+    },
+    "config": {
+        "sort-packages": true,
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "allow-plugins": {}
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "1.0.x-dev"
+        }
     }
 }

@@ -21,5 +21,5 @@ $api->getData();
 
 # Composer install
 
-> composer require rmanara/news-api-php:dev-master
+> composer require rmanara/news-api-php:^1.0
 

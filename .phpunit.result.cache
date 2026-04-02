@@ -1,0 +1,1 @@
+{"version":1,"defects":{"testApi::testwithKeywithrequiredParametersApiCall":4,"testApi::testwithoutKeyApiCall":4},"times":{"testApi::testwithoutKeyApiCall":0.002,"testApi::testwithKeywithoutrequiredParametersApiCall":0.164,"testApi::testwithKeywithrequiredParametersApiCall":0.002,"testApi::testWithInvalidTypeReturnsError":0.002}}
