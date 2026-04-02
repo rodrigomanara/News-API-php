@@ -70,15 +70,13 @@ abstract class AbstractApi implements InterfaceApi
             CURLOPT_TIMEOUT        => 30,
             CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST  => 'GET',
-            // Explicitly enforce SSL certificate verification to prevent MITM attacks.
             CURLOPT_SSL_VERIFYPEER => true,
             CURLOPT_SSL_VERIFYHOST => 2,
             CURLOPT_HTTPHEADER     => [
                 'Cache-Control: no-cache',
-                // Header-based auth keeps the key out of URLs, logs, and history.
                 'X-Api-Key: ' . $apiKey,
-                'User-Agent : '.$dynamicAgent,
             ],
+            CURLOPT_USERAGENT      => $dynamicAgent,
         ]);
 
         $response = curl_exec($curl);

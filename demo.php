@@ -16,6 +16,3 @@ require_once __DIR__ . '/vendor/autoload.php';
 // The key is sent via the X-Api-Key header and never appears in the URL.
 $api  = new \NewsApi\Api('YOUR_API_KEY', ['q' => 'Reino Unido', 'language' => 'pt']);
 $data = $api->getData();
-
-
-var_dump($data);
