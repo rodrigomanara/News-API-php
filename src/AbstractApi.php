@@ -60,6 +60,8 @@ abstract class AbstractApi implements InterfaceApi
             throw new \RuntimeException('Failed to initialise a cURL handle.');
         }
 
+        $dynamicAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'Mozilla/5.0 (Default-Fallback)';
+
         curl_setopt_array($curl, [
             CURLOPT_URL            => $url,
             CURLOPT_RETURNTRANSFER => true,
@@ -75,6 +77,7 @@ abstract class AbstractApi implements InterfaceApi
                 'Cache-Control: no-cache',
                 // Header-based auth keeps the key out of URLs, logs, and history.
                 'X-Api-Key: ' . $apiKey,
+                'User-Agent : '.$dynamicAgent,
             ],
         ]);
 
